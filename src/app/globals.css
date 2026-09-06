@@ -1,27 +1,77 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
   color-scheme: light;
+
+  /* 明るく食欲をそそる配色 */
+  --cream: #fff3e2; /* 背景：明るいクリーム */
+  --surface: #ffffff; /* カード：白 */
+  --surface-alt: #fdf0df; /* カード内の淡い面 */
+  --line: #f0d9ba; /* 枠線：はっきり見える暖色 */
+  --ink: #2e2119;
+  --ink-soft: #7a6350;
+
+  --orange: #c24a0b; /* ボタン・強調（白文字が読める濃さ） */
+  --orange-dark: #a03d07;
+  --orange-bright: #f5883c; /* 装飾用の明るいオレンジ */
+
+  --amber-bg: #ffe6c2;
+  --amber-ink: #a85c00;
+  --amber-line: #f5a524; /* 「行きたい」カードの左帯 */
+
+  --sage-bg: #ddf0cb;
+  --sage-ink: #3c7320;
+  --sage-line: #63ac35; /* 「行った」カードの左帯 */
+
+  --gold: #e8a317;
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-cream: var(--cream);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-line: var(--line);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+
+  --color-orange: var(--orange);
+  --color-orange-dark: var(--orange-dark);
+  --color-orange-bright: var(--orange-bright);
+
+  --color-amber-bg: var(--amber-bg);
+  --color-amber-ink: var(--amber-ink);
+  --color-amber-line: var(--amber-line);
+
+  --color-sage-bg: var(--sage-bg);
+  --color-sage-ink: var(--sage-ink);
+  --color-sage-line: var(--sage-line);
+
+  --color-gold: var(--gold);
+
   --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  /* 端末に元から入っている明朝体を使う（追加ダウンロードなしで上品な見出しに） */
+  --font-serif: "Hiragino Mincho ProN", "Yu Mincho", YuMincho, serif;
+
+  /* カードを背景から浮かせる影 */
+  --shadow-card: 0 1px 2px rgba(120, 70, 20, 0.08),
+    0 6px 16px -8px rgba(120, 70, 20, 0.22);
+  --shadow-lift: 0 2px 6px rgba(120, 70, 20, 0.12),
+    0 14px 28px -12px rgba(120, 70, 20, 0.32);
 }
 
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--cream);
+  color: var(--ink);
 }
 
 input,
 select,
 textarea {
-  background-color: #ffffff;
-  color: #0f172a;
+  background-color: var(--surface);
+  color: var(--ink);
+}
+
+input::placeholder,
+textarea::placeholder {
+  color: #b3a08b;
 }

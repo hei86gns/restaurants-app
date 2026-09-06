@@ -63,96 +63,116 @@ export default function LoginPage() {
     router.replace("/");
   }
 
+  const inputClass =
+    "w-full rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-orange focus:outline-none";
+
   return (
-    <main className="flex-1 flex items-center justify-center px-4">
+    <main className="flex flex-1 flex-col items-center justify-center px-6 py-10">
       <div className="w-full max-w-sm">
-        <h1 className="text-2xl font-bold text-center mb-2">お店リスト</h1>
-        <p className="text-center text-slate-500 mb-8">
-          行きたい店・行ってよかった店を記録しよう
+        {/* 料理の写真：白い背景を乗算合成でクリーム色になじませている */}
+        <div className="mx-auto mb-6 w-full max-w-[280px]">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="/images/hero-plate.jpg"
+            alt="お皿に盛られた料理と、その両側に置かれたフォークとナイフ"
+            className="w-full mix-blend-multiply"
+          />
+        </div>
+
+        <h1 className="text-center font-serif text-2xl tracking-wide text-ink">
+          お店リスト
+        </h1>
+        <p className="mt-2 text-center text-[13px] leading-relaxed text-ink-soft">
+          行きたいお店、
+          <br />
+          行ってよかったお店を残しておく場所。
         </p>
 
-        {step === "email" ? (
-          <form
-            onSubmit={handleSendCode}
-            className="rounded-lg bg-white border border-slate-200 p-6 space-y-4"
-          >
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                メールアドレス
-              </label>
-              <input
-                type="email"
-                required
-                autoComplete="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="you@example.com"
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-              />
-            </div>
+        <div className="mt-7 rounded-2xl border border-line bg-surface shadow-card p-6">
+          {step === "email" ? (
+            <form onSubmit={handleSendCode} className="space-y-4">
+              <div>
+                <label className="mb-1.5 block text-[13px] font-medium text-ink">
+                  メールアドレス
+                </label>
+                <input
+                  type="email"
+                  required
+                  autoComplete="email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="you@example.com"
+                  className={inputClass}
+                />
+              </div>
 
-            {errorMessage && (
-              <p className="text-sm text-red-600">{errorMessage}</p>
-            )}
+              {errorMessage && (
+                <p className="text-[13px] text-orange">{errorMessage}</p>
+              )}
 
-            <button
-              type="submit"
-              disabled={busy}
-              className="w-full rounded-md bg-slate-900 text-white py-2 text-sm font-medium hover:bg-slate-800 disabled:opacity-50"
-            >
-              {busy ? "送信中..." : "ログイン用コードを送る"}
-            </button>
-          </form>
-        ) : (
-          <form
-            onSubmit={handleVerifyCode}
-            className="rounded-lg bg-white border border-slate-200 p-6 space-y-4"
-          >
-            <p className="text-sm text-slate-600">
-              {email} にログイン用コードを送りました。メールに記載された数字を入力してください。
-            </p>
+              <button
+                type="submit"
+                disabled={busy}
+                className="w-full rounded-xl bg-orange py-3 text-sm font-medium text-white transition-colors hover:bg-orange-dark disabled:opacity-50"
+              >
+                {busy ? "送信中..." : "ログイン用コードを送る"}
+              </button>
 
-            <div>
-              <label className="block text-sm font-medium text-slate-700 mb-1">
-                ログイン用コード
-              </label>
-              <input
-                required
-                inputMode="numeric"
-                autoComplete="one-time-code"
-                maxLength={10}
-                value={code}
-                onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                placeholder="12345678"
-                className="w-full rounded-md border border-slate-300 px-3 py-2 text-center text-lg tracking-widest focus:outline-none focus:ring-2 focus:ring-slate-900"
-              />
-            </div>
+              <p className="text-center text-[11px] leading-relaxed text-ink-soft">
+                パスワードは不要です。
+                <br />
+                メールに届く数字を入力するだけでログインできます。
+              </p>
+            </form>
+          ) : (
+            <form onSubmit={handleVerifyCode} className="space-y-4">
+              <p className="text-[13px] leading-relaxed text-ink-soft">
+                <span className="text-ink">{email}</span>{" "}
+                にログイン用コードを送りました。メールに記載された数字を入力してください。
+              </p>
 
-            {errorMessage && (
-              <p className="text-sm text-red-600">{errorMessage}</p>
-            )}
+              <div>
+                <label className="mb-1.5 block text-[13px] font-medium text-ink">
+                  ログイン用コード
+                </label>
+                <input
+                  required
+                  inputMode="numeric"
+                  autoComplete="one-time-code"
+                  maxLength={10}
+                  value={code}
+                  onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
+                  placeholder="12345678"
+                  className="w-full rounded-xl border border-line px-3.5 py-2.5 text-center text-lg tracking-[0.3em] focus:border-orange focus:outline-none"
+                />
+              </div>
 
-            <button
-              type="submit"
-              disabled={busy}
-              className="w-full rounded-md bg-slate-900 text-white py-2 text-sm font-medium hover:bg-slate-800 disabled:opacity-50"
-            >
-              {busy ? "確認中..." : "ログイン"}
-            </button>
+              {errorMessage && (
+                <p className="text-[13px] text-orange">{errorMessage}</p>
+              )}
 
-            <button
-              type="button"
-              onClick={() => {
-                setStep("email");
-                setCode("");
-                setErrorMessage("");
-              }}
-              className="w-full text-sm text-slate-500 hover:text-slate-700"
-            >
-              メールアドレスを入力し直す
-            </button>
-          </form>
-        )}
+              <button
+                type="submit"
+                disabled={busy}
+                className="w-full rounded-xl bg-orange py-3 text-sm font-medium text-white transition-colors hover:bg-orange-dark disabled:opacity-50"
+              >
+                {busy ? "確認中..." : "ログイン"}
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setStep("email");
+                  setCode("");
+                  setErrorMessage("");
+                }}
+                className="w-full text-[13px] text-ink-soft transition-colors hover:text-ink"
+              >
+                メールアドレスを入力し直す
+              </button>
+            </form>
+          )}
+        </div>
       </div>
     </main>
   );

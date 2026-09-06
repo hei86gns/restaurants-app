@@ -4,8 +4,8 @@
   "description": "行きたい店・行ってよかった店を記録するアプリ",
   "start_url": "/",
   "display": "standalone",
-  "background_color": "#f8fafc",
-  "theme_color": "#0f172a",
+  "background_color": "#fff3e2",
+  "theme_color": "#c24a0b",
   "icons": [
     {
       "src": "/icons/icon-192.png",

@@ -8,7 +8,7 @@ import { RestaurantCard } from "@/components/RestaurantCard";
 export default function SuggestPage() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
-  const [genreFilter, setGenreFilter] = useState<string>("all");
+  const [genreFilter, setGenreFilter] = useState("all");
   const [suggestion, setSuggestion] = useState<Restaurant | null>(null);
 
   useEffect(() => {
@@ -46,43 +46,75 @@ export default function SuggestPage() {
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-xl font-bold">今日どこ行く？</h1>
+    <div className="space-y-5">
+      <div>
+        <h1 className="font-serif text-2xl text-ink">今日どこ行く？</h1>
+        <p className="mt-1.5 text-[13px] text-ink-soft">
+          「行きたい」リストから選んで提案します。
+        </p>
+      </div>
 
       {loading ? (
-        <p className="text-sm text-slate-400">読み込み中...</p>
+        <p className="py-10 text-center text-sm text-ink-soft">読み込み中...</p>
       ) : wantToGo.length === 0 ? (
-        <p className="text-sm text-slate-400">
-          「行きたい」ステータスのお店がまだありません。
-        </p>
+        <div className="rounded-2xl border border-dashed border-line px-6 py-12 text-center">
+          <p className="font-serif text-ink">「行きたい」のお店がありません</p>
+          <p className="mt-1.5 text-[13px] text-ink-soft">
+            下の「＋」からお店を登録して、
+            <br />
+            ステータスを「行きたい」にしてみましょう。
+          </p>
+        </div>
       ) : (
         <>
           {allGenres.length > 0 && (
-            <select
-              value={genreFilter}
-              onChange={(e) => setGenreFilter(e.target.value)}
-              className="rounded-md border border-slate-300 px-2 py-1.5 text-sm"
-            >
-              <option value="all">気分（ジャンル）を選ばない</option>
-              {allGenres.map((g) => (
-                <option key={g} value={g}>
-                  {g}
-                </option>
-              ))}
-            </select>
+            <div>
+              <p className="mb-2 text-[13px] font-medium text-ink">今日の気分</p>
+              <div className="-mx-5 flex gap-1.5 overflow-x-auto px-5 pb-1">
+                <button
+                  onClick={() => setGenreFilter("all")}
+                  className={`shrink-0 rounded-full px-3.5 py-1.5 text-[13px] transition-colors ${
+                    genreFilter === "all"
+                      ? "bg-orange font-medium text-white"
+                      : "border border-line bg-surface text-ink-soft"
+                  }`}
+                >
+                  こだわらない
+                </button>
+                {allGenres.map((g) => (
+                  <button
+                    key={g}
+                    onClick={() => setGenreFilter(g)}
+                    className={`shrink-0 rounded-full px-3.5 py-1.5 text-[13px] transition-colors ${
+                      genreFilter === g
+                        ? "bg-orange font-medium text-white"
+                        : "border border-line bg-surface text-ink-soft"
+                    }`}
+                  >
+                    {g}
+                  </button>
+                ))}
+              </div>
+            </div>
           )}
 
           <button
             onClick={handleSuggest}
             disabled={candidates.length === 0}
-            className="w-full rounded-md bg-slate-900 text-white py-3 text-sm font-medium hover:bg-slate-800 disabled:opacity-50"
+            className="w-full rounded-2xl bg-orange py-4 text-[15px] font-medium text-white transition-colors hover:bg-orange-dark disabled:opacity-40"
           >
-            提案してもらう（{candidates.length}件から抽選）
+            {candidates.length === 0
+              ? "この気分に合うお店がありません"
+              : suggestion
+                ? "もう一度選びなおす"
+                : `${candidates.length}件から選んでもらう`}
           </button>
 
           {suggestion && (
-            <div>
-              <p className="text-sm text-slate-500 mb-2">今日のおすすめ：</p>
+            <div className="space-y-2.5 rounded-2xl bg-surface-alt p-4">
+              <p className="text-center font-serif text-[15px] text-ink">
+                today&apos;s pick
+              </p>
               <RestaurantCard restaurant={suggestion} />
             </div>
           )}

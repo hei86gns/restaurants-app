@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
+import Link from "next/link";
 import { deleteRestaurant, getRestaurant } from "@/lib/restaurants";
 import type { Restaurant } from "@/lib/types";
 import { RestaurantForm } from "@/components/RestaurantForm";
@@ -31,126 +32,169 @@ export default function RestaurantDetailPage() {
   }
 
   if (loading) {
-    return <p className="text-sm text-slate-400">読み込み中...</p>;
+    return <p className="py-10 text-center text-sm text-ink-soft">読み込み中...</p>;
   }
 
   if (!restaurant) {
-    return <p className="text-sm text-slate-400">お店が見つかりませんでした。</p>;
+    return (
+      <p className="py-10 text-center text-sm text-ink-soft">
+        お店が見つかりませんでした。
+      </p>
+    );
   }
 
   if (editing) {
     return (
       <div>
-        <h1 className="text-xl font-bold mb-6">お店を編集</h1>
+        <h1 className="mb-5 font-serif text-xl text-ink">お店を編集</h1>
         <RestaurantForm restaurant={restaurant} />
       </div>
     );
   }
 
+  const been = restaurant.status === "been";
+
   return (
     <div className="space-y-5">
-      <div className="flex items-start justify-between gap-3">
-        <div>
-          <h1 className="text-xl font-bold">{restaurant.name}</h1>
-          {restaurant.genre.length > 0 && (
-            <p className="mt-1 flex flex-wrap gap-1">
-              {restaurant.genre.map((g) => (
-                <span
-                  key={g}
-                  className="text-xs rounded-full bg-slate-100 text-slate-600 px-2 py-0.5"
-                >
-                  {g}
-                </span>
-              ))}
-            </p>
-          )}
-        </div>
-        <span
-          className={`text-xs rounded-full px-2 py-0.5 font-medium shrink-0 ${
-            restaurant.status === "been"
-              ? "bg-emerald-100 text-emerald-700"
-              : "bg-amber-100 text-amber-700"
-          }`}
+      <Link
+        href="/"
+        className="inline-flex items-center gap-1 text-[13px] text-ink-soft transition-colors hover:text-ink"
+      >
+        <svg
+          width="15"
+          height="15"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
         >
-          {restaurant.status === "been" ? "行った" : "行きたい"}
-        </span>
-      </div>
-
-      {restaurant.rating && (
-        <p className="text-amber-500 text-lg">
-          {"★".repeat(restaurant.rating)}
-          {"☆".repeat(5 - restaurant.rating)}
-        </p>
-      )}
+          <path d="m15 18-6-6 6-6" />
+        </svg>
+        一覧にもどる
+      </Link>
 
       {restaurant.photo_url && (
         // eslint-disable-next-line @next/next/no-img-element
         <img
           src={restaurant.photo_url}
           alt={restaurant.name}
-          className="w-full max-h-64 rounded-lg object-cover"
+          className="h-56 w-full rounded-2xl object-cover"
         />
       )}
 
-      {restaurant.address && MAPS_API_KEY && (
-        <iframe
-          className="w-full h-56 rounded-lg border border-slate-200"
-          loading="lazy"
-          allowFullScreen
-          referrerPolicy="no-referrer-when-downgrade"
-          src={`https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${encodeURIComponent(
-            restaurant.address
-          )}`}
-        />
-      )}
-
-      {restaurant.address && (
-        <p className="text-sm text-slate-600">{restaurant.address}</p>
-      )}
-
-      <div className="flex flex-wrap gap-3 text-sm">
-        {restaurant.google_maps_url && (
-          <a
-            href={restaurant.google_maps_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
+      <div>
+        <div className="flex items-start justify-between gap-3">
+          <h1 className="font-serif text-2xl leading-snug text-ink">
+            {restaurant.name}
+          </h1>
+          <span
+            className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${
+              been ? "bg-sage-bg text-sage-ink" : "bg-amber-bg text-amber-ink"
+            }`}
           >
-            Googleマップで開く
-          </a>
-        )}
-        {restaurant.website_url && (
-          <a
-            href={restaurant.website_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-blue-600 hover:underline"
-          >
-            公式サイト
-          </a>
+            {been ? "行った" : "行きたい"}
+          </span>
+        </div>
+
+        {restaurant.rating ? (
+          <p className="mt-2 text-lg leading-none text-gold">
+            {"★".repeat(restaurant.rating)}
+            <span className="text-line">
+              {"★".repeat(5 - restaurant.rating)}
+            </span>
+          </p>
+        ) : null}
+
+        {restaurant.genre.length > 0 && (
+          <div className="mt-2.5 flex flex-wrap gap-1.5">
+            {restaurant.genre.map((g) => (
+              <span
+                key={g}
+                className="rounded-full bg-surface-alt px-2.5 py-1 text-[12px] text-ink-soft"
+              >
+                {g}
+              </span>
+            ))}
+          </div>
         )}
       </div>
 
       {restaurant.memo && (
-        <div>
-          <h2 className="text-sm font-medium text-slate-700 mb-1">感想メモ</h2>
-          <p className="text-sm text-slate-600 whitespace-pre-wrap">
+        <div className="rounded-2xl border border-line bg-surface shadow-card p-5">
+          <h2 className="mb-2 font-serif text-[15px] text-ink">感想メモ</h2>
+          <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink-soft">
             {restaurant.memo}
           </p>
         </div>
       )}
 
-      <div className="flex gap-3 pt-4 border-t border-slate-200">
+      {restaurant.address && (
+        <div className="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+          {MAPS_API_KEY && (
+            <iframe
+              className="h-52 w-full border-0"
+              loading="lazy"
+              allowFullScreen
+              referrerPolicy="no-referrer-when-downgrade"
+              src={`https://www.google.com/maps/embed/v1/place?key=${MAPS_API_KEY}&q=${encodeURIComponent(
+                restaurant.address
+              )}`}
+            />
+          )}
+          <div className="p-4">
+            <p className="text-[13px] leading-relaxed text-ink-soft">
+              {restaurant.address}
+            </p>
+            <div className="mt-3 flex flex-wrap gap-2">
+              {restaurant.google_maps_url && (
+                <a
+                  href={restaurant.google_maps_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full border border-line px-3.5 py-1.5 text-[12px] text-ink transition-colors hover:bg-surface-alt"
+                >
+                  Googleマップで開く
+                </a>
+              )}
+              {restaurant.website_url && (
+                <a
+                  href={restaurant.website_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="rounded-full border border-line px-3.5 py-1.5 text-[12px] text-ink transition-colors hover:bg-surface-alt"
+                >
+                  公式サイト
+                </a>
+              )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {!restaurant.address && restaurant.website_url && (
+        <a
+          href={restaurant.website_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block rounded-full border border-line px-3.5 py-1.5 text-[12px] text-ink transition-colors hover:bg-surface-alt"
+        >
+          公式サイト
+        </a>
+      )}
+
+      <div className="flex gap-2.5 pt-1">
         <button
           onClick={() => setEditing(true)}
-          className="rounded-md bg-slate-900 text-white px-4 py-2 text-sm font-medium hover:bg-slate-800"
+          className="flex-1 rounded-xl bg-ink py-3 text-sm font-medium text-cream transition-opacity hover:opacity-90"
         >
-          編集
+          編集する
         </button>
         <button
           onClick={handleDelete}
           disabled={deleting}
-          className="rounded-md border border-red-200 text-red-600 px-4 py-2 text-sm font-medium hover:bg-red-50 disabled:opacity-50"
+          className="rounded-xl border border-line px-5 py-3 text-sm text-ink-soft transition-colors hover:bg-surface-alt disabled:opacity-50"
         >
           {deleting ? "削除中..." : "削除"}
         </button>

@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import { Header } from "@/components/Header";
+import { BottomNav } from "@/components/BottomNav";
 
 export default function ProtectedLayout({
   children,
@@ -21,18 +22,19 @@ export default function ProtectedLayout({
 
   if (loading || !session) {
     return (
-      <main className="flex-1 flex items-center justify-center text-slate-400 text-sm">
+      <main className="flex flex-1 items-center justify-center text-sm text-ink-soft">
         読み込み中...
       </main>
     );
   }
 
   return (
-    <div className="flex-1 flex flex-col">
+    <div className="flex flex-1 flex-col">
       <Header />
-      <main className="flex-1 max-w-2xl w-full mx-auto px-4 py-6">
+      <main className="mx-auto w-full max-w-2xl flex-1 px-5 pb-32 pt-5">
         {children}
       </main>
+      <BottomNav />
     </div>
   );
 }

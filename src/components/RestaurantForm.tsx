@@ -17,19 +17,17 @@ function buildGoogleMapsUrl(name: string, address: string): string {
   )}`;
 }
 
-export function RestaurantForm({
-  restaurant,
-}: {
-  restaurant?: Restaurant;
-}) {
+const inputClass =
+  "w-full rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-orange focus:outline-none";
+const labelClass = "mb-1.5 block text-[13px] font-medium text-ink";
+
+export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
   const { session } = useAuth();
   const router = useRouter();
   const isEdit = !!restaurant;
 
   const [name, setName] = useState(restaurant?.name ?? "");
-  const [genreText, setGenreText] = useState(
-    restaurant?.genre.join(", ") ?? ""
-  );
+  const [genreText, setGenreText] = useState(restaurant?.genre.join(", ") ?? "");
   const [status, setStatus] = useState<RestaurantStatus>(
     restaurant?.status ?? "want_to_go"
   );
@@ -98,127 +96,157 @@ export function RestaurantForm({
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
-          店名 *
-        </label>
-        <input
-          required
-          value={name}
-          onChange={(e) => setName(e.target.value)}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
-          ジャンル・タグ（カンマ区切り）
-        </label>
-        <input
-          value={genreText}
-          onChange={(e) => setGenreText(e.target.value)}
-          placeholder="カフェ, ランチ, 和食"
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
-          ステータス
-        </label>
-        <select
-          value={status}
-          onChange={(e) => setStatus(e.target.value as RestaurantStatus)}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm"
-        >
-          <option value="want_to_go">行きたい</option>
-          <option value="been">行った</option>
-        </select>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
-          住所
-        </label>
-        <input
-          value={address}
-          onChange={(e) => setAddress(e.target.value)}
-          placeholder="東京都渋谷区..."
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-        />
-        <p className="mt-1 text-xs text-slate-400">
-          店名と住所からGoogleマップのリンクを自動作成します。
-        </p>
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
-          公式サイトURL
-        </label>
-        <input
-          type="url"
-          value={websiteUrl}
-          onChange={(e) => setWebsiteUrl(e.target.value)}
-          placeholder="https://..."
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-        />
-      </div>
-
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
-          写真
-        </label>
-        {photoPreview && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={photoPreview}
-            alt=""
-            className="mb-2 h-32 w-32 rounded-md object-cover"
+      <div className="rounded-2xl border border-line bg-surface shadow-card p-5 space-y-5">
+        <div>
+          <label className={labelClass}>店名</label>
+          <input
+            required
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            placeholder="例：喫茶さくら"
+            className={inputClass}
           />
-        )}
-        <input type="file" accept="image/*" onChange={handlePhotoChange} />
-      </div>
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
-          評価
-        </label>
-        <div className="flex gap-1">
-          {[1, 2, 3, 4, 5].map((n) => (
-            <button
-              key={n}
-              type="button"
-              onClick={() => setRating(rating === n ? 0 : n)}
-              className="text-2xl leading-none"
-            >
-              {n <= rating ? (
-                <span className="text-amber-500">★</span>
-              ) : (
-                <span className="text-slate-300">★</span>
-              )}
-            </button>
-          ))}
+        <div>
+          <label className={labelClass}>ステータス</label>
+          <div className="flex gap-2">
+            {(
+              [
+                { value: "want_to_go", label: "行きたい" },
+                { value: "been", label: "行った" },
+              ] as const
+            ).map((opt) => (
+              <button
+                key={opt.value}
+                type="button"
+                onClick={() => setStatus(opt.value)}
+                className={`flex-1 rounded-xl border py-2.5 text-sm transition-colors ${
+                  status === opt.value
+                    ? "border-orange bg-orange/10 font-medium text-orange"
+                    : "border-line bg-surface text-ink-soft"
+                }`}
+              >
+                {opt.label}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        <div>
+          <label className={labelClass}>ジャンル・タグ</label>
+          <input
+            value={genreText}
+            onChange={(e) => setGenreText(e.target.value)}
+            placeholder="カフェ, ランチ, 和食"
+            className={inputClass}
+          />
+          <p className="mt-1.5 text-[11px] text-ink-soft">
+            カンマ（,）で区切ると複数登録できます
+          </p>
         </div>
       </div>
 
-      <div>
-        <label className="block text-sm font-medium text-slate-700 mb-1">
-          感想メモ
-        </label>
-        <textarea
-          value={memo}
-          onChange={(e) => setMemo(e.target.value)}
-          rows={4}
-          className="w-full rounded-md border border-slate-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900"
-        />
+      <div className="rounded-2xl border border-line bg-surface shadow-card p-5 space-y-5">
+        <div>
+          <label className={labelClass}>住所</label>
+          <input
+            value={address}
+            onChange={(e) => setAddress(e.target.value)}
+            placeholder="東京都渋谷区..."
+            className={inputClass}
+          />
+          <p className="mt-1.5 text-[11px] text-ink-soft">
+            入力すると、地図とGoogleマップのリンクが自動で作られます
+          </p>
+        </div>
+
+        <div>
+          <label className={labelClass}>公式サイトURL</label>
+          <input
+            type="url"
+            value={websiteUrl}
+            onChange={(e) => setWebsiteUrl(e.target.value)}
+            placeholder="https://..."
+            className={inputClass}
+          />
+        </div>
       </div>
 
-      {error && <p className="text-sm text-red-600">{error}</p>}
+      <div className="rounded-2xl border border-line bg-surface shadow-card p-5 space-y-5">
+        <div>
+          <label className={labelClass}>写真</label>
+          <div className="flex items-center gap-4">
+            {photoPreview ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={photoPreview}
+                alt=""
+                className="h-20 w-20 rounded-xl object-cover"
+              />
+            ) : (
+              <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-surface-alt text-[11px] text-ink-soft">
+                なし
+              </div>
+            )}
+            <label className="cursor-pointer rounded-xl border border-line px-4 py-2 text-[13px] text-ink transition-colors hover:bg-surface-alt">
+              写真を選ぶ
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePhotoChange}
+                className="hidden"
+              />
+            </label>
+          </div>
+        </div>
+
+        <div>
+          <label className={labelClass}>評価</label>
+          <div className="flex items-center gap-1.5">
+            {[1, 2, 3, 4, 5].map((n) => (
+              <button
+                key={n}
+                type="button"
+                onClick={() => setRating(rating === n ? 0 : n)}
+                aria-label={`${n}つ星`}
+                className="text-[26px] leading-none"
+              >
+                <span className={n <= rating ? "text-gold" : "text-line"}>
+                  ★
+                </span>
+              </button>
+            ))}
+            {rating > 0 && (
+              <button
+                type="button"
+                onClick={() => setRating(0)}
+                className="ml-2 text-[11px] text-ink-soft"
+              >
+                クリア
+              </button>
+            )}
+          </div>
+        </div>
+
+        <div>
+          <label className={labelClass}>感想メモ</label>
+          <textarea
+            value={memo}
+            onChange={(e) => setMemo(e.target.value)}
+            rows={4}
+            placeholder="何を食べたか、雰囲気、また行きたいか など"
+            className={inputClass}
+          />
+        </div>
+      </div>
+
+      {error && <p className="text-[13px] text-orange">{error}</p>}
 
       <button
         type="submit"
         disabled={saving}
-        className="w-full rounded-md bg-slate-900 text-white py-2.5 text-sm font-medium hover:bg-slate-800 disabled:opacity-50"
+        className="w-full rounded-xl bg-orange py-3.5 text-sm font-medium text-white transition-colors hover:bg-orange-dark disabled:opacity-50"
       >
         {saving ? "保存中..." : isEdit ? "更新する" : "登録する"}
       </button>

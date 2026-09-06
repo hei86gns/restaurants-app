@@ -13,34 +13,33 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-10 bg-white border-b border-slate-200">
-      <div className="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
-        <Link href="/" className="font-bold text-slate-900">
+    <header className="sticky top-0 z-10 bg-orange shadow-[0_2px_10px_rgba(120,70,20,0.2)]">
+      <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
+        <Link
+          href="/"
+          className="flex items-center gap-2 font-serif text-lg tracking-[0.08em] text-white"
+        >
+          <svg
+            width="17"
+            height="17"
+            viewBox="0 0 24 24"
+            fill="none"
+            stroke="#ffd79a"
+            strokeWidth="1.8"
+            strokeLinecap="round"
+            strokeLinejoin="round"
+          >
+            <path d="M5 3v7a2 2 0 0 0 4 0V3M7 10v11" />
+            <path d="M17.5 3c-1.4 1.2-2 3.2-2 5.2s.6 3.3 2 3.3 2-1.3 2-3.3-.6-4-2-5.2zM17.5 11.5V21" />
+          </svg>
           お店リスト
         </Link>
-        <nav className="flex items-center gap-4 text-sm">
-          <Link href="/" className="text-slate-600 hover:text-slate-900">
-            一覧
-          </Link>
-          <Link
-            href="/suggest"
-            className="text-slate-600 hover:text-slate-900"
-          >
-            今日どこ行く？
-          </Link>
-          <Link
-            href="/restaurants/new"
-            className="rounded-md bg-slate-900 text-white px-3 py-1.5 font-medium hover:bg-slate-800"
-          >
-            追加
-          </Link>
-          <button
-            onClick={handleLogout}
-            className="text-slate-400 hover:text-slate-600"
-          >
-            ログアウト
-          </button>
-        </nav>
+        <button
+          onClick={handleLogout}
+          className="text-xs text-[#ffdcb8] transition-colors hover:text-white"
+        >
+          ログアウト
+        </button>
       </div>
     </header>
   );

@@ -1,52 +1,101 @@
 import Link from "next/link";
 import type { Restaurant } from "@/lib/types";
 
+function StatusBadge({ status }: { status: Restaurant["status"] }) {
+  const been = status === "been";
+  return (
+    <span
+      className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
+        been ? "bg-sage-bg text-sage-ink" : "bg-amber-bg text-amber-ink"
+      }`}
+    >
+      {been ? "行った" : "行きたい"}
+    </span>
+  );
+}
+
+function Stars({ rating }: { rating: number }) {
+  return (
+    <span className="text-[13px] leading-none tracking-[0.05em] text-gold">
+      {"★".repeat(rating)}
+      <span className="text-[#e6d4bb]">{"★".repeat(5 - rating)}</span>
+    </span>
+  );
+}
+
+function PhotoPlaceholder() {
+  return (
+    <div className="flex h-[84px] w-[84px] shrink-0 items-center justify-center rounded-xl bg-surface-alt">
+      <svg
+        width="26"
+        height="26"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="#e0b184"
+        strokeWidth="1.6"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+      >
+        <path d="M5 3v7a2 2 0 0 0 4 0V3M7 10v11" />
+        <path d="M17.5 3c-1.4 1.2-2 3.2-2 5.2s.6 3.3 2 3.3 2-1.3 2-3.3-.6-4-2-5.2zM17.5 11.5V21" />
+      </svg>
+    </div>
+  );
+}
+
 export function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
+  const been = restaurant.status === "been";
+
   return (
     <Link
       href={`/restaurants/${restaurant.id}`}
-      className="block rounded-lg border border-slate-200 bg-white p-4 hover:border-slate-300 transition-colors"
+      className={`flex items-start gap-4 rounded-2xl border border-line border-l-[5px] bg-surface p-4 shadow-card transition-shadow hover:shadow-lift ${
+        been ? "border-l-sage-line" : "border-l-amber-line"
+      }`}
     >
-      <div className="flex items-start justify-between gap-3">
-        <div className="min-w-0">
-          <p className="font-medium text-slate-900 truncate">
+      {restaurant.photo_url ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={restaurant.photo_url}
+          alt=""
+          className="h-[84px] w-[84px] shrink-0 rounded-xl object-cover"
+        />
+      ) : (
+        <PhotoPlaceholder />
+      )}
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-start justify-between gap-2">
+          <p className="truncate font-serif text-[17px] font-medium text-ink">
             {restaurant.name}
           </p>
-          {restaurant.genre.length > 0 && (
-            <p className="mt-1 flex flex-wrap gap-1">
-              {restaurant.genre.map((g) => (
-                <span
-                  key={g}
-                  className="text-xs rounded-full bg-slate-100 text-slate-600 px-2 py-0.5"
-                >
-                  {g}
-                </span>
-              ))}
-            </p>
-          )}
-          {restaurant.memo && (
-            <p className="mt-2 text-sm text-slate-500 line-clamp-2">
-              {restaurant.memo}
-            </p>
-          )}
+          <StatusBadge status={restaurant.status} />
         </div>
-        <div className="flex flex-col items-end gap-1 shrink-0">
-          <span
-            className={`text-xs rounded-full px-2 py-0.5 font-medium ${
-              restaurant.status === "been"
-                ? "bg-emerald-100 text-emerald-700"
-                : "bg-amber-100 text-amber-700"
-            }`}
-          >
-            {restaurant.status === "been" ? "行った" : "行きたい"}
-          </span>
-          {restaurant.rating && (
-            <span className="text-sm text-amber-500">
-              {"★".repeat(restaurant.rating)}
-              {"☆".repeat(5 - restaurant.rating)}
-            </span>
-          )}
-        </div>
+
+        {restaurant.rating ? (
+          <div className="mt-1.5">
+            <Stars rating={restaurant.rating} />
+          </div>
+        ) : null}
+
+        {restaurant.genre.length > 0 && (
+          <div className="mt-2 flex flex-wrap gap-1">
+            {restaurant.genre.map((g) => (
+              <span
+                key={g}
+                className="rounded-full bg-surface-alt px-2 py-0.5 text-[11px] text-ink-soft"
+              >
+                {g}
+              </span>
+            ))}
+          </div>
+        )}
+
+        {restaurant.memo && (
+          <p className="mt-2 line-clamp-2 text-[13px] leading-relaxed text-ink-soft">
+            {restaurant.memo}
+          </p>
+        )}
       </div>
     </Link>
   );
