@@ -46,7 +46,7 @@ export function BottomNav() {
   const isSuggest = pathname === "/suggest";
 
   return (
-    <nav className="fixed inset-x-0 bottom-0 z-20 border-t-2 border-line bg-surface shadow-[0_-2px_16px_rgba(60,80,30,0.14)]">
+    <nav className="shrink-0 border-t-2 border-line bg-surface shadow-[0_-2px_16px_rgba(60,80,30,0.14)]">
       <div className="mx-auto flex max-w-2xl items-end justify-around px-6 pb-[max(0.5rem,env(safe-area-inset-bottom))] pt-2">
         <Link
           href="/"

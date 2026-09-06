@@ -22,17 +22,18 @@ export default function ProtectedLayout({
 
   if (loading || !session) {
     return (
-      <main className="flex flex-1 items-center justify-center text-sm text-ink-soft">
+      <div className="flex h-full items-center justify-center text-sm text-ink-soft">
         読み込み中...
-      </main>
+      </div>
     );
   }
 
   return (
-    <div className="flex flex-1 flex-col">
+    // 画面いっぱいの枠。ヘッダーとナビは動かず、中央だけがスクロールする
+    <div className="flex h-full flex-col pl-[env(safe-area-inset-left)] pr-[env(safe-area-inset-right)]">
       <Header />
-      <main className="mx-auto w-full max-w-2xl flex-1 px-5 pb-32 pt-5">
-        {children}
+      <main className="app-scroll min-h-0 flex-1">
+        <div className="mx-auto w-full max-w-2xl px-5 pb-8 pt-5">{children}</div>
       </main>
       <BottomNav />
     </div>

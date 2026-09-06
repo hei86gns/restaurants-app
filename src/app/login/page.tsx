@@ -137,8 +137,8 @@ export default function LoginPage() {
   }
 
   return (
-    <main className="flex flex-1 flex-col items-center justify-center px-6 py-10">
-      <div className="w-full max-w-sm">
+    <main className="app-scroll flex h-full flex-col items-center px-6 py-10 pl-[max(1.5rem,env(safe-area-inset-left))] pr-[max(1.5rem,env(safe-area-inset-right))] pt-[max(2.5rem,env(safe-area-inset-top))] pb-[max(2.5rem,env(safe-area-inset-bottom))]">
+      <div className="my-auto w-full max-w-sm">
         <div className="mx-auto mb-6 w-full max-w-[280px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img

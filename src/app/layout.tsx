@@ -46,7 +46,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="ja"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-bg text-ink">
+      <body className="h-full overflow-hidden bg-bg text-ink">
         <ServiceWorkerRegister />
         <AuthProvider>{children}</AuthProvider>
       </body>

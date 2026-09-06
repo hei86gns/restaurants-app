@@ -69,9 +69,15 @@
     0 14px 28px -12px rgba(60, 80, 30, 0.34);
 }
 
-html {
-  /* 画面を引っ張ったときの跳ね返り（バウンド）を止める */
+html,
+body {
+  /* 画面の高さに固定して、ページ全体が動かないようにする */
+  height: 100%;
+  overflow: hidden;
+  /* 引っ張ったときの跳ね返り（バウンド）を止める */
   overscroll-behavior: none;
+  /* 長押しでの選択による画面のズレを防ぐ */
+  -webkit-touch-callout: none;
 }
 
 body {
@@ -80,9 +86,14 @@ body {
   font-family: var(--font-sans);
   font-weight: 500; /* 全体的に少し太めにして読みやすく */
   -webkit-font-smoothing: antialiased;
-  /* 横方向のはみ出しによる画面のズレを防ぐ */
+}
+
+/* スクロールする領域（中身）だけ、なめらかに動くようにする */
+.app-scroll {
+  overflow-y: auto;
   overflow-x: hidden;
-  overscroll-behavior: none;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
 }
 
 h1, h2, h3, strong, button, label {
