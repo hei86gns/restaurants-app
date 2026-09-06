@@ -4,11 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { listRestaurants } from "@/lib/restaurants";
 import type { Restaurant } from "@/lib/types";
 import { RestaurantCard } from "@/components/RestaurantCard";
+import { collectAreas } from "@/lib/area";
 
 export default function SuggestPage() {
   const [restaurants, setRestaurants] = useState<Restaurant[]>([]);
   const [loading, setLoading] = useState(true);
   const [genreFilter, setGenreFilter] = useState("all");
+  const [areaFilter, setAreaFilter] = useState("all");
   const [suggestion, setSuggestion] = useState<Restaurant | null>(null);
 
   useEffect(() => {
@@ -28,12 +30,16 @@ export default function SuggestPage() {
     return Array.from(set).sort();
   }, [wantToGo]);
 
+  const allAreas = useMemo(() => collectAreas(wantToGo), [wantToGo]);
+
   const candidates = useMemo(
     () =>
-      genreFilter === "all"
-        ? wantToGo
-        : wantToGo.filter((r) => r.genre.includes(genreFilter)),
-    [wantToGo, genreFilter]
+      wantToGo.filter((r) => {
+        if (genreFilter !== "all" && !r.genre.includes(genreFilter)) return false;
+        if (areaFilter !== "all" && r.area !== areaFilter) return false;
+        return true;
+      }),
+    [wantToGo, genreFilter, areaFilter]
   );
 
   function handleSuggest() {
@@ -104,7 +110,7 @@ export default function SuggestPage() {
             className="w-full rounded-2xl bg-blue py-4 text-[15px] font-medium text-white transition-colors hover:bg-blue-dark disabled:opacity-40"
           >
             {candidates.length === 0
-              ? "この気分に合うお店がありません"
+              ? "この条件に合うお店がありません"
               : suggestion
                 ? "もう一度選びなおす"
                 : `${candidates.length}件から選んでもらう`}

@@ -13,7 +13,7 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-10 bg-lime shadow-[0_2px_10px_rgba(60,80,30,0.18)]">
+    <header className="sticky top-0 z-10 bg-lime pt-[env(safe-area-inset-top)] shadow-[0_2px_10px_rgba(60,80,30,0.18)]">
       <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
         <Link
           href="/"

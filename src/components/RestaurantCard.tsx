@@ -72,11 +72,14 @@ export function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
           <StatusBadge status={restaurant.status} />
         </div>
 
-        {restaurant.rating ? (
-          <div className="mt-1.5">
-            <Stars rating={restaurant.rating} />
-          </div>
-        ) : null}
+        <div className="mt-1.5 flex items-center gap-2">
+          {restaurant.area && (
+            <span className="shrink-0 text-[12px] font-bold text-ink-soft">
+              📍{restaurant.area}
+            </span>
+          )}
+          {restaurant.rating ? <Stars rating={restaurant.rating} /> : null}
+        </div>
 
         {restaurant.genre.length > 0 && (
           <div className="mt-2 flex flex-wrap gap-1">

@@ -69,12 +69,20 @@
     0 14px 28px -12px rgba(60, 80, 30, 0.34);
 }
 
+html {
+  /* 画面を引っ張ったときの跳ね返り（バウンド）を止める */
+  overscroll-behavior: none;
+}
+
 body {
   background: var(--bg);
   color: var(--ink);
   font-family: var(--font-sans);
   font-weight: 500; /* 全体的に少し太めにして読みやすく */
   -webkit-font-smoothing: antialiased;
+  /* 横方向のはみ出しによる画面のズレを防ぐ */
+  overflow-x: hidden;
+  overscroll-behavior: none;
 }
 
 h1, h2, h3, strong, button, label {

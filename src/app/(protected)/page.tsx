@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { listRestaurants } from "@/lib/restaurants";
 import type { Restaurant, RestaurantStatus } from "@/lib/types";
 import { RestaurantCard } from "@/components/RestaurantCard";
+import { collectAreas } from "@/lib/area";
 
 type StatusFilter = RestaurantStatus | "all";
 
@@ -18,6 +19,7 @@ export default function HomePage() {
   const [loading, setLoading] = useState(true);
   const [statusFilter, setStatusFilter] = useState<StatusFilter>("all");
   const [genreFilter, setGenreFilter] = useState("all");
+  const [areaFilter, setAreaFilter] = useState("all");
   const [search, setSearch] = useState("");
 
   useEffect(() => {
@@ -32,9 +34,13 @@ export default function HomePage() {
     return Array.from(set).sort();
   }, [restaurants]);
 
+  // 登録されているエリアだけを選択肢にする
+  const allAreas = useMemo(() => collectAreas(restaurants), [restaurants]);
+
   const filtered = restaurants.filter((r) => {
     if (statusFilter !== "all" && r.status !== statusFilter) return false;
     if (genreFilter !== "all" && !r.genre.includes(genreFilter)) return false;
+    if (areaFilter !== "all" && r.area !== areaFilter) return false;
     if (search) {
       const q = search.toLowerCase();
       if (
@@ -86,6 +92,37 @@ export default function HomePage() {
           </button>
         ))}
       </div>
+
+      {allAreas.length > 0 && (
+        <div>
+          <p className="mb-1.5 text-[12px] font-bold text-ink-soft">エリア</p>
+          <div className="-mx-5 flex gap-1.5 overflow-x-auto px-5 pb-1">
+            <button
+              onClick={() => setAreaFilter("all")}
+              className={`shrink-0 rounded-full px-3 py-1 text-[12px] transition-colors ${
+                areaFilter === "all"
+                  ? "bg-lime font-bold text-ink"
+                  : "border-2 border-line bg-surface text-ink-soft"
+              }`}
+            >
+              すべての地域
+            </button>
+            {allAreas.map((a) => (
+              <button
+                key={a}
+                onClick={() => setAreaFilter(a)}
+                className={`shrink-0 rounded-full px-3 py-1 text-[12px] transition-colors ${
+                  areaFilter === a
+                    ? "bg-lime font-bold text-ink"
+                    : "border-2 border-line bg-surface text-ink-soft"
+                }`}
+              >
+                {a}
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       {allGenres.length > 0 && (
         <div className="-mx-5 flex gap-1.5 overflow-x-auto px-5 pb-1">

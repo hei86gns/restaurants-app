@@ -34,6 +34,10 @@ export const metadata: Metadata = {
 
 export const viewport: Viewport = {
   themeColor: "#a3d93b",
+  // iPhoneのノッチ部分の余白量を CSS から参照できるようにする
+  viewportFit: "cover",
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {

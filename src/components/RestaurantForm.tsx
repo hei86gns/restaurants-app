@@ -1,14 +1,16 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import {
   createRestaurant,
   deleteRestaurantPhoto,
+  listRestaurants,
   updateRestaurant,
   uploadRestaurantPhoto,
 } from "@/lib/restaurants";
+import { collectAreas, guessAreaFromAddress } from "@/lib/area";
 import type { Restaurant, RestaurantStatus } from "@/lib/types";
 
 function buildGoogleMapsUrl(name: string, address: string): string {
@@ -34,6 +36,8 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
   const [status, setStatus] = useState<RestaurantStatus>(
     restaurant?.status ?? "want_to_go"
   );
+  const [area, setArea] = useState(restaurant?.area ?? "");
+  const [areaSuggestions, setAreaSuggestions] = useState<string[]>([]);
   const [address, setAddress] = useState(restaurant?.address ?? "");
   const [websiteUrl, setWebsiteUrl] = useState(restaurant?.website_url ?? "");
   const [memo, setMemo] = useState(restaurant?.memo ?? "");
@@ -48,6 +52,22 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
 
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
+
+  // 既に登録済みのエリア名を候補として読み込む
+  useEffect(() => {
+    listRestaurants()
+      .then((items) => setAreaSuggestions(collectAreas(items)))
+      .catch(() => {});
+  }, []);
+
+  // 住所を入力したとき、エリアが空ならそこから自動で埋める
+  function handleAddressChange(value: string) {
+    setAddress(value);
+    if (!area.trim()) {
+      const guessed = guessAreaFromAddress(value);
+      if (guessed) setArea(guessed);
+    }
+  }
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
@@ -94,6 +114,7 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
         name,
         genre,
         status,
+        area: area.trim() || null,
         address: address || null,
         lat: null,
         lng: null,
@@ -179,12 +200,49 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
           <label className={labelClass}>住所</label>
           <input
             value={address}
-            onChange={(e) => setAddress(e.target.value)}
+            onChange={(e) => handleAddressChange(e.target.value)}
             placeholder="東京都渋谷区..."
             className={inputClass}
           />
           <p className="mt-1.5 text-[12px] text-ink-soft">
             入力すると、地図とGoogleマップのリンクが自動で作られます
+          </p>
+        </div>
+
+        <div>
+          <label className={labelClass}>エリア</label>
+          <input
+            value={area}
+            onChange={(e) => setArea(e.target.value)}
+            list="area-suggestions"
+            placeholder="大阪、西宮、四日市 など"
+            className={inputClass}
+          />
+          <datalist id="area-suggestions">
+            {areaSuggestions.map((a) => (
+              <option key={a} value={a} />
+            ))}
+          </datalist>
+          {areaSuggestions.length > 0 && (
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {areaSuggestions.map((a) => (
+                <button
+                  key={a}
+                  type="button"
+                  onClick={() => setArea(a)}
+                  className={`rounded-full px-3 py-1 text-[12px] transition-colors ${
+                    area === a
+                      ? "bg-lime font-bold text-ink"
+                      : "border-2 border-line bg-surface text-ink-soft"
+                  }`}
+                >
+                  {a}
+                </button>
+              ))}
+            </div>
+          )}
+          <p className="mt-1.5 text-[12px] text-ink-soft">
+            一覧で地域ごとに絞り込むために使います。住所から自動で入りますが、自由に直せます
           </p>
         </div>
 

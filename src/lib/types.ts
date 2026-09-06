@@ -6,6 +6,7 @@ export type Restaurant = {
   name: string;
   genre: string[];
   status: RestaurantStatus;
+  area: string | null;
   address: string | null;
   lat: number | null;
   lng: number | null;
@@ -22,6 +23,7 @@ export type RestaurantInput = {
   name: string;
   genre: string[];
   status: RestaurantStatus;
+  area: string | null;
   address: string | null;
   lat: number | null;
   lng: number | null;
