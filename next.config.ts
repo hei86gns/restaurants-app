@@ -1,7 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
+  allowedDevOrigins: [
+    "192.168.10.167",
+    "controlling-contains-gale-sending.trycloudflare.com",
+  ],
 };
 
 export default nextConfig;
