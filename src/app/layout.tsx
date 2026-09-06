@@ -33,7 +33,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#c24a0b",
+  themeColor: "#a3d93b",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
@@ -42,7 +42,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="ja"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col bg-cream text-ink">
+      <body className="min-h-full flex flex-col bg-bg text-ink">
         <ServiceWorkerRegister />
         <AuthProvider>{children}</AuthProvider>
       </body>

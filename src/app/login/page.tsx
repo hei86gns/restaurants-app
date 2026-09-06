@@ -5,26 +5,66 @@ import { useRouter } from "next/navigation";
 import { supabase } from "@/lib/supabase";
 import { useAuth } from "@/components/AuthProvider";
 
-type Step = "email" | "code";
+/**
+ * ログインの流れ
+ *  password : メールアドレス＋パスワードでログイン（通常）
+ *  code     : パスワードを忘れた／未設定のとき、メールのコードで本人確認
+ *  newPass  : 本人確認のあと、新しいパスワードを決める
+ */
+type Step = "password" | "code" | "newPass";
+
+const inputClass =
+  "w-full rounded-xl border-2 border-line px-3.5 py-3 text-[15px] focus:border-blue focus:outline-none";
+const labelClass = "mb-1.5 block text-[13px] font-bold text-ink";
+const primaryButtonClass =
+  "w-full rounded-2xl bg-blue py-3.5 text-[15px] font-bold text-white transition-colors hover:bg-blue-dark disabled:opacity-50";
 
 export default function LoginPage() {
   const { session, loading } = useAuth();
   const router = useRouter();
 
-  const [step, setStep] = useState<Step>("email");
+  const [step, setStep] = useState<Step>("password");
   const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [code, setCode] = useState("");
+  const [newPassword, setNewPassword] = useState("");
   const [busy, setBusy] = useState(false);
   const [errorMessage, setErrorMessage] = useState("");
+  const [notice, setNotice] = useState("");
 
   useEffect(() => {
-    if (!loading && session) {
+    if (!loading && session && step !== "newPass") {
       router.replace("/");
     }
-  }, [loading, session, router]);
+  }, [loading, session, step, router]);
 
-  async function handleSendCode(e: React.FormEvent) {
+  async function handlePasswordLogin(e: React.FormEvent) {
     e.preventDefault();
+    setBusy(true);
+    setErrorMessage("");
+
+    const { error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
+    });
+
+    setBusy(false);
+
+    if (error) {
+      setErrorMessage(
+        "メールアドレスかパスワードが違います。まだパスワードを設定していない場合は、下の「パスワードを忘れた・まだ設定していない方」から進んでください。"
+      );
+      return;
+    }
+
+    router.replace("/");
+  }
+
+  async function handleSendCode() {
+    if (!email) {
+      setErrorMessage("先にメールアドレスを入力してください。");
+      return;
+    }
     setBusy(true);
     setErrorMessage("");
 
@@ -37,6 +77,7 @@ export default function LoginPage() {
       return;
     }
 
+    setNotice(`${email} に確認コードを送りました。`);
     setStep("code");
   }
 
@@ -60,26 +101,54 @@ export default function LoginPage() {
       return;
     }
 
+    setNotice("本人確認ができました。新しいパスワードを決めてください。");
+    setStep("newPass");
+  }
+
+  async function handleSetPassword(e: React.FormEvent) {
+    e.preventDefault();
+
+    if (newPassword.length < 8) {
+      setErrorMessage("パスワードは8文字以上にしてください。");
+      return;
+    }
+
+    setBusy(true);
+    setErrorMessage("");
+
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+
+    setBusy(false);
+
+    if (error) {
+      setErrorMessage(error.message);
+      return;
+    }
+
     router.replace("/");
   }
 
-  const inputClass =
-    "w-full rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-orange focus:outline-none";
+  function backToPasswordStep() {
+    setStep("password");
+    setCode("");
+    setNewPassword("");
+    setErrorMessage("");
+    setNotice("");
+  }
 
   return (
     <main className="flex flex-1 flex-col items-center justify-center px-6 py-10">
       <div className="w-full max-w-sm">
-        {/* 料理の写真：白い背景を乗算合成でクリーム色になじませている */}
         <div className="mx-auto mb-6 w-full max-w-[280px]">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img
             src="/images/hero-plate.jpg"
             alt="お皿に盛られた料理と、その両側に置かれたフォークとナイフ"
-            className="w-full mix-blend-multiply"
+            className="w-full rounded-2xl border-2 border-line shadow-card"
           />
         </div>
 
-        <h1 className="text-center font-serif text-2xl tracking-wide text-ink">
+        <h1 className="text-center text-[26px] font-bold tracking-wide text-ink">
           お店リスト
         </h1>
         <p className="mt-2 text-center text-[13px] leading-relaxed text-ink-soft">
@@ -88,13 +157,17 @@ export default function LoginPage() {
           行ってよかったお店を残しておく場所。
         </p>
 
-        <div className="mt-7 rounded-2xl border border-line bg-surface shadow-card p-6">
-          {step === "email" ? (
-            <form onSubmit={handleSendCode} className="space-y-4">
+        <div className="mt-7 rounded-2xl border-2 border-line bg-surface p-6 shadow-card">
+          {notice && (
+            <p className="mb-4 rounded-xl bg-blue-pale px-4 py-3 text-[13px] text-ink">
+              {notice}
+            </p>
+          )}
+
+          {step === "password" && (
+            <form onSubmit={handlePasswordLogin} className="space-y-4">
               <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-ink">
-                  メールアドレス
-                </label>
+                <label className={labelClass}>メールアドレス</label>
                 <input
                   type="email"
                   required
@@ -106,35 +179,43 @@ export default function LoginPage() {
                 />
               </div>
 
+              <div>
+                <label className={labelClass}>パスワード</label>
+                <input
+                  type="password"
+                  required
+                  autoComplete="current-password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className={inputClass}
+                />
+              </div>
+
               {errorMessage && (
-                <p className="text-[13px] text-orange">{errorMessage}</p>
+                <p className="rounded-xl bg-yellow-bg px-4 py-3 text-[13px] leading-relaxed text-yellow-ink">
+                  {errorMessage}
+                </p>
               )}
 
-              <button
-                type="submit"
-                disabled={busy}
-                className="w-full rounded-xl bg-orange py-3 text-sm font-medium text-white transition-colors hover:bg-orange-dark disabled:opacity-50"
-              >
-                {busy ? "送信中..." : "ログイン用コードを送る"}
+              <button type="submit" disabled={busy} className={primaryButtonClass}>
+                {busy ? "確認中..." : "ログイン"}
               </button>
 
-              <p className="text-center text-[11px] leading-relaxed text-ink-soft">
-                パスワードは不要です。
-                <br />
-                メールに届く数字を入力するだけでログインできます。
-              </p>
+              <button
+                type="button"
+                onClick={handleSendCode}
+                disabled={busy}
+                className="w-full text-[13px] font-bold text-blue underline-offset-2 hover:underline disabled:opacity-50"
+              >
+                パスワードを忘れた・まだ設定していない方
+              </button>
             </form>
-          ) : (
-            <form onSubmit={handleVerifyCode} className="space-y-4">
-              <p className="text-[13px] leading-relaxed text-ink-soft">
-                <span className="text-ink">{email}</span>{" "}
-                にログイン用コードを送りました。メールに記載された数字を入力してください。
-              </p>
+          )}
 
+          {step === "code" && (
+            <form onSubmit={handleVerifyCode} className="space-y-4">
               <div>
-                <label className="mb-1.5 block text-[13px] font-medium text-ink">
-                  ログイン用コード
-                </label>
+                <label className={labelClass}>確認コード</label>
                 <input
                   required
                   inputMode="numeric"
@@ -143,32 +224,53 @@ export default function LoginPage() {
                   value={code}
                   onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
                   placeholder="12345678"
-                  className="w-full rounded-xl border border-line px-3.5 py-2.5 text-center text-lg tracking-[0.3em] focus:border-orange focus:outline-none"
+                  className="w-full rounded-xl border-2 border-line px-3.5 py-3 text-center text-lg tracking-[0.3em] focus:border-blue focus:outline-none"
                 />
               </div>
 
               {errorMessage && (
-                <p className="text-[13px] text-orange">{errorMessage}</p>
+                <p className="rounded-xl bg-yellow-bg px-4 py-3 text-[13px] leading-relaxed text-yellow-ink">
+                  {errorMessage}
+                </p>
               )}
 
-              <button
-                type="submit"
-                disabled={busy}
-                className="w-full rounded-xl bg-orange py-3 text-sm font-medium text-white transition-colors hover:bg-orange-dark disabled:opacity-50"
-              >
-                {busy ? "確認中..." : "ログイン"}
+              <button type="submit" disabled={busy} className={primaryButtonClass}>
+                {busy ? "確認中..." : "コードを確認する"}
               </button>
 
               <button
                 type="button"
-                onClick={() => {
-                  setStep("email");
-                  setCode("");
-                  setErrorMessage("");
-                }}
-                className="w-full text-[13px] text-ink-soft transition-colors hover:text-ink"
+                onClick={backToPasswordStep}
+                className="w-full text-[13px] text-ink-soft hover:text-ink"
               >
-                メールアドレスを入力し直す
+                もどる
+              </button>
+            </form>
+          )}
+
+          {step === "newPass" && (
+            <form onSubmit={handleSetPassword} className="space-y-4">
+              <div>
+                <label className={labelClass}>新しいパスワード</label>
+                <input
+                  type="password"
+                  required
+                  autoComplete="new-password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="8文字以上"
+                  className={inputClass}
+                />
+              </div>
+
+              {errorMessage && (
+                <p className="rounded-xl bg-yellow-bg px-4 py-3 text-[13px] leading-relaxed text-yellow-ink">
+                  {errorMessage}
+                </p>
+              )}
+
+              <button type="submit" disabled={busy} className={primaryButtonClass}>
+                {busy ? "設定中..." : "このパスワードにする"}
               </button>
             </form>
           )}

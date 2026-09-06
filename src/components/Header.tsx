@@ -13,19 +13,19 @@ export function Header() {
   }
 
   return (
-    <header className="sticky top-0 z-10 bg-orange shadow-[0_2px_10px_rgba(120,70,20,0.2)]">
+    <header className="sticky top-0 z-10 bg-lime shadow-[0_2px_10px_rgba(60,80,30,0.18)]">
       <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
         <Link
           href="/"
-          className="flex items-center gap-2 font-serif text-lg tracking-[0.08em] text-white"
+          className="flex items-center gap-2 text-[19px] font-bold tracking-wide text-ink"
         >
           <svg
-            width="17"
-            height="17"
+            width="19"
+            height="19"
             viewBox="0 0 24 24"
             fill="none"
-            stroke="#ffd79a"
-            strokeWidth="1.8"
+            stroke="currentColor"
+            strokeWidth="2.2"
             strokeLinecap="round"
             strokeLinejoin="round"
           >
@@ -36,7 +36,7 @@ export function Header() {
         </Link>
         <button
           onClick={handleLogout}
-          className="text-xs text-[#ffdcb8] transition-colors hover:text-white"
+          className="rounded-full bg-white/50 px-3 py-1.5 text-[12px] font-bold text-ink transition-colors hover:bg-white/80"
         >
           ログアウト
         </button>

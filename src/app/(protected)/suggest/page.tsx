@@ -48,7 +48,7 @@ export default function SuggestPage() {
   return (
     <div className="space-y-5">
       <div>
-        <h1 className="font-serif text-2xl text-ink">今日どこ行く？</h1>
+        <h1 className="font-bold text-2xl text-ink">今日どこ行く？</h1>
         <p className="mt-1.5 text-[13px] text-ink-soft">
           「行きたい」リストから選んで提案します。
         </p>
@@ -57,8 +57,8 @@ export default function SuggestPage() {
       {loading ? (
         <p className="py-10 text-center text-sm text-ink-soft">読み込み中...</p>
       ) : wantToGo.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-line px-6 py-12 text-center">
-          <p className="font-serif text-ink">「行きたい」のお店がありません</p>
+        <div className="rounded-2xl border-2 border-dashed border-line px-6 py-12 text-center">
+          <p className="font-bold text-ink">「行きたい」のお店がありません</p>
           <p className="mt-1.5 text-[13px] text-ink-soft">
             下の「＋」からお店を登録して、
             <br />
@@ -75,8 +75,8 @@ export default function SuggestPage() {
                   onClick={() => setGenreFilter("all")}
                   className={`shrink-0 rounded-full px-3.5 py-1.5 text-[13px] transition-colors ${
                     genreFilter === "all"
-                      ? "bg-orange font-medium text-white"
-                      : "border border-line bg-surface text-ink-soft"
+                      ? "bg-blue font-medium text-white"
+                      : "border-2 border-line bg-surface text-ink-soft"
                   }`}
                 >
                   こだわらない
@@ -87,8 +87,8 @@ export default function SuggestPage() {
                     onClick={() => setGenreFilter(g)}
                     className={`shrink-0 rounded-full px-3.5 py-1.5 text-[13px] transition-colors ${
                       genreFilter === g
-                        ? "bg-orange font-medium text-white"
-                        : "border border-line bg-surface text-ink-soft"
+                        ? "bg-blue font-medium text-white"
+                        : "border-2 border-line bg-surface text-ink-soft"
                     }`}
                   >
                     {g}
@@ -101,7 +101,7 @@ export default function SuggestPage() {
           <button
             onClick={handleSuggest}
             disabled={candidates.length === 0}
-            className="w-full rounded-2xl bg-orange py-4 text-[15px] font-medium text-white transition-colors hover:bg-orange-dark disabled:opacity-40"
+            className="w-full rounded-2xl bg-blue py-4 text-[15px] font-medium text-white transition-colors hover:bg-blue-dark disabled:opacity-40"
           >
             {candidates.length === 0
               ? "この気分に合うお店がありません"
@@ -112,7 +112,7 @@ export default function SuggestPage() {
 
           {suggestion && (
             <div className="space-y-2.5 rounded-2xl bg-surface-alt p-4">
-              <p className="text-center font-serif text-[15px] text-ink">
+              <p className="text-center font-bold text-[15px] text-ink">
                 today&apos;s pick
               </p>
               <RestaurantCard restaurant={suggestion} />

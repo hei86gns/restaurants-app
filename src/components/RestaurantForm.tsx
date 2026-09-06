@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { useAuth } from "@/components/AuthProvider";
 import {
   createRestaurant,
+  deleteRestaurantPhoto,
   updateRestaurant,
   uploadRestaurantPhoto,
 } from "@/lib/restaurants";
@@ -18,8 +19,10 @@ function buildGoogleMapsUrl(name: string, address: string): string {
 }
 
 const inputClass =
-  "w-full rounded-xl border border-line px-3.5 py-2.5 text-sm focus:border-orange focus:outline-none";
-const labelClass = "mb-1.5 block text-[13px] font-medium text-ink";
+  "w-full rounded-xl border-2 border-line px-3.5 py-2.5 text-[15px] focus:border-blue focus:outline-none";
+const labelClass = "mb-1.5 block text-[13px] font-bold text-ink";
+const cardClass =
+  "rounded-2xl border-2 border-line bg-surface p-5 shadow-card space-y-5";
 
 export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
   const { session } = useAuth();
@@ -35,17 +38,29 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
   const [websiteUrl, setWebsiteUrl] = useState(restaurant?.website_url ?? "");
   const [memo, setMemo] = useState(restaurant?.memo ?? "");
   const [rating, setRating] = useState<number>(restaurant?.rating ?? 0);
+
   const [photoFile, setPhotoFile] = useState<File | null>(null);
   const [photoPreview, setPhotoPreview] = useState<string | null>(
     restaurant?.photo_url ?? null
   );
+  // 既存の写真を「削除」した場合に立てる目印
+  const [photoRemoved, setPhotoRemoved] = useState(false);
+
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
 
   function handlePhotoChange(e: React.ChangeEvent<HTMLInputElement>) {
     const file = e.target.files?.[0] ?? null;
+    if (!file) return;
     setPhotoFile(file);
-    if (file) setPhotoPreview(URL.createObjectURL(file));
+    setPhotoRemoved(false);
+    setPhotoPreview(URL.createObjectURL(file));
+  }
+
+  function handlePhotoRemove() {
+    setPhotoFile(null);
+    setPhotoPreview(null);
+    setPhotoRemoved(true);
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -55,9 +70,19 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
     setError("");
 
     try {
-      let photoUrl = restaurant?.photo_url ?? null;
+      const previousUrl = restaurant?.photo_url ?? null;
+      let photoUrl = previousUrl;
+
+      if (photoRemoved) {
+        photoUrl = null;
+      }
       if (photoFile) {
         photoUrl = await uploadRestaurantPhoto(photoFile, session.user.id);
+      }
+
+      // 差し替え・削除で使わなくなった写真は保存先からも消す
+      if (previousUrl && previousUrl !== photoUrl) {
+        await deleteRestaurantPhoto(previousUrl).catch(() => {});
       }
 
       const genre = genreText
@@ -96,7 +121,7 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
-      <div className="rounded-2xl border border-line bg-surface shadow-card p-5 space-y-5">
+      <div className={cardClass}>
         <div>
           <label className={labelClass}>店名</label>
           <input
@@ -121,9 +146,11 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
                 key={opt.value}
                 type="button"
                 onClick={() => setStatus(opt.value)}
-                className={`flex-1 rounded-xl border py-2.5 text-sm transition-colors ${
+                className={`flex-1 rounded-xl border-2 py-3 text-[15px] transition-colors ${
                   status === opt.value
-                    ? "border-orange bg-orange/10 font-medium text-orange"
+                    ? opt.value === "been"
+                      ? "border-green-line bg-green-bg text-green-ink"
+                      : "border-yellow-line bg-yellow-bg text-yellow-ink"
                     : "border-line bg-surface text-ink-soft"
                 }`}
               >
@@ -141,13 +168,13 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
             placeholder="カフェ, ランチ, 和食"
             className={inputClass}
           />
-          <p className="mt-1.5 text-[11px] text-ink-soft">
+          <p className="mt-1.5 text-[12px] text-ink-soft">
             カンマ（,）で区切ると複数登録できます
           </p>
         </div>
       </div>
 
-      <div className="rounded-2xl border border-line bg-surface shadow-card p-5 space-y-5">
+      <div className={cardClass}>
         <div>
           <label className={labelClass}>住所</label>
           <input
@@ -156,7 +183,7 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
             placeholder="東京都渋谷区..."
             className={inputClass}
           />
-          <p className="mt-1.5 text-[11px] text-ink-soft">
+          <p className="mt-1.5 text-[12px] text-ink-soft">
             入力すると、地図とGoogleマップのリンクが自動で作られます
           </p>
         </div>
@@ -173,7 +200,7 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
         </div>
       </div>
 
-      <div className="rounded-2xl border border-line bg-surface shadow-card p-5 space-y-5">
+      <div className={cardClass}>
         <div>
           <label className={labelClass}>写真</label>
           <div className="flex items-center gap-4">
@@ -182,23 +209,39 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
               <img
                 src={photoPreview}
                 alt=""
-                className="h-20 w-20 rounded-xl object-cover"
+                className="h-24 w-24 rounded-xl border-2 border-line object-cover"
               />
             ) : (
-              <div className="flex h-20 w-20 items-center justify-center rounded-xl bg-surface-alt text-[11px] text-ink-soft">
+              <div className="flex h-24 w-24 items-center justify-center rounded-xl border-2 border-dashed border-line bg-surface-alt text-[12px] text-ink-soft">
                 なし
               </div>
             )}
-            <label className="cursor-pointer rounded-xl border border-line px-4 py-2 text-[13px] text-ink transition-colors hover:bg-surface-alt">
-              写真を選ぶ
-              <input
-                type="file"
-                accept="image/*"
-                onChange={handlePhotoChange}
-                className="hidden"
-              />
-            </label>
+
+            <div className="flex flex-col gap-2">
+              <label className="cursor-pointer rounded-xl border-2 border-line px-4 py-2 text-center text-[13px] text-ink transition-colors hover:bg-surface-alt">
+                {photoPreview ? "写真を変える" : "写真を選ぶ"}
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handlePhotoChange}
+                  className="hidden"
+                />
+              </label>
+
+              {photoPreview && (
+                <button
+                  type="button"
+                  onClick={handlePhotoRemove}
+                  className="rounded-xl border-2 border-line px-4 py-2 text-[13px] text-ink-soft transition-colors hover:bg-surface-alt"
+                >
+                  写真を削除
+                </button>
+              )}
+            </div>
           </div>
+          <p className="mt-2 text-[12px] text-ink-soft">
+            大きな写真は自動で縮小して保存します
+          </p>
         </div>
 
         <div>
@@ -210,9 +253,9 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
                 type="button"
                 onClick={() => setRating(rating === n ? 0 : n)}
                 aria-label={`${n}つ星`}
-                className="text-[26px] leading-none"
+                className="text-[30px] leading-none"
               >
-                <span className={n <= rating ? "text-gold" : "text-line"}>
+                <span className={n <= rating ? "text-star" : "text-line"}>
                   ★
                 </span>
               </button>
@@ -221,7 +264,7 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
               <button
                 type="button"
                 onClick={() => setRating(0)}
-                className="ml-2 text-[11px] text-ink-soft"
+                className="ml-2 text-[12px] text-ink-soft"
               >
                 クリア
               </button>
@@ -241,12 +284,16 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
         </div>
       </div>
 
-      {error && <p className="text-[13px] text-orange">{error}</p>}
+      {error && (
+        <p className="rounded-xl bg-yellow-bg px-4 py-3 text-[13px] text-yellow-ink">
+          {error}
+        </p>
+      )}
 
       <button
         type="submit"
         disabled={saving}
-        className="w-full rounded-xl bg-orange py-3.5 text-sm font-medium text-white transition-colors hover:bg-orange-dark disabled:opacity-50"
+        className="w-full rounded-2xl bg-blue py-4 text-[15px] font-bold text-white shadow-card transition-colors hover:bg-blue-dark disabled:opacity-50"
       >
         {saving ? "保存中..." : isEdit ? "更新する" : "登録する"}
       </button>

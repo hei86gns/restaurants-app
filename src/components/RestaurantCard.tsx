@@ -5,8 +5,8 @@ function StatusBadge({ status }: { status: Restaurant["status"] }) {
   const been = status === "been";
   return (
     <span
-      className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-semibold ${
-        been ? "bg-sage-bg text-sage-ink" : "bg-amber-bg text-amber-ink"
+      className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-bold ${
+        been ? "bg-green-bg text-green-ink" : "bg-yellow-bg text-yellow-ink"
       }`}
     >
       {been ? "行った" : "行きたい"}
@@ -16,9 +16,9 @@ function StatusBadge({ status }: { status: Restaurant["status"] }) {
 
 function Stars({ rating }: { rating: number }) {
   return (
-    <span className="text-[13px] leading-none tracking-[0.05em] text-gold">
+    <span className="text-[14px] leading-none tracking-[0.05em] text-star">
       {"★".repeat(rating)}
-      <span className="text-[#e6d4bb]">{"★".repeat(5 - rating)}</span>
+      <span className="text-line">{"★".repeat(5 - rating)}</span>
     </span>
   );
 }
@@ -27,12 +27,12 @@ function PhotoPlaceholder() {
   return (
     <div className="flex h-[84px] w-[84px] shrink-0 items-center justify-center rounded-xl bg-surface-alt">
       <svg
-        width="26"
-        height="26"
+        width="28"
+        height="28"
         viewBox="0 0 24 24"
         fill="none"
-        stroke="#e0b184"
-        strokeWidth="1.6"
+        stroke="#9dbb6e"
+        strokeWidth="2"
         strokeLinecap="round"
         strokeLinejoin="round"
       >
@@ -49,8 +49,8 @@ export function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
   return (
     <Link
       href={`/restaurants/${restaurant.id}`}
-      className={`flex items-start gap-4 rounded-2xl border border-line border-l-[5px] bg-surface p-4 shadow-card transition-shadow hover:shadow-lift ${
-        been ? "border-l-sage-line" : "border-l-amber-line"
+      className={`flex items-start gap-4 rounded-2xl border-2 border-line border-l-[7px] bg-surface p-4 shadow-card transition-shadow hover:shadow-lift ${
+        been ? "border-l-green-line" : "border-l-yellow-line"
       }`}
     >
       {restaurant.photo_url ? (
@@ -66,7 +66,7 @@ export function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
 
       <div className="min-w-0 flex-1">
         <div className="flex items-start justify-between gap-2">
-          <p className="truncate font-serif text-[17px] font-medium text-ink">
+          <p className="truncate text-[17px] font-bold text-ink">
             {restaurant.name}
           </p>
           <StatusBadge status={restaurant.status} />

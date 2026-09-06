@@ -46,7 +46,7 @@ export default function RestaurantDetailPage() {
   if (editing) {
     return (
       <div>
-        <h1 className="mb-5 font-serif text-xl text-ink">お店を編集</h1>
+        <h1 className="mb-5 font-bold text-xl text-ink">お店を編集</h1>
         <RestaurantForm restaurant={restaurant} />
       </div>
     );
@@ -86,12 +86,12 @@ export default function RestaurantDetailPage() {
 
       <div>
         <div className="flex items-start justify-between gap-3">
-          <h1 className="font-serif text-2xl leading-snug text-ink">
+          <h1 className="font-bold text-2xl leading-snug text-ink">
             {restaurant.name}
           </h1>
           <span
             className={`shrink-0 rounded-full px-2.5 py-1 text-[11px] font-medium ${
-              been ? "bg-sage-bg text-sage-ink" : "bg-amber-bg text-amber-ink"
+              been ? "bg-green-bg text-green-ink" : "bg-yellow-bg text-yellow-ink"
             }`}
           >
             {been ? "行った" : "行きたい"}
@@ -99,7 +99,7 @@ export default function RestaurantDetailPage() {
         </div>
 
         {restaurant.rating ? (
-          <p className="mt-2 text-lg leading-none text-gold">
+          <p className="mt-2 text-lg leading-none text-star">
             {"★".repeat(restaurant.rating)}
             <span className="text-line">
               {"★".repeat(5 - restaurant.rating)}
@@ -122,8 +122,8 @@ export default function RestaurantDetailPage() {
       </div>
 
       {restaurant.memo && (
-        <div className="rounded-2xl border border-line bg-surface shadow-card p-5">
-          <h2 className="mb-2 font-serif text-[15px] text-ink">感想メモ</h2>
+        <div className="rounded-2xl border-2 border-line bg-surface shadow-card p-5">
+          <h2 className="mb-2 font-bold text-[15px] text-ink">感想メモ</h2>
           <p className="whitespace-pre-wrap text-[14px] leading-relaxed text-ink-soft">
             {restaurant.memo}
           </p>
@@ -131,7 +131,7 @@ export default function RestaurantDetailPage() {
       )}
 
       {restaurant.address && (
-        <div className="overflow-hidden rounded-2xl border border-line bg-surface shadow-card">
+        <div className="overflow-hidden rounded-2xl border-2 border-line bg-surface shadow-card">
           {MAPS_API_KEY && (
             <iframe
               className="h-52 w-full border-0"
@@ -153,7 +153,7 @@ export default function RestaurantDetailPage() {
                   href={restaurant.google_maps_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full border border-line px-3.5 py-1.5 text-[12px] text-ink transition-colors hover:bg-surface-alt"
+                  className="rounded-full border-2 border-line px-3.5 py-1.5 text-[12px] text-ink transition-colors hover:bg-surface-alt"
                 >
                   Googleマップで開く
                 </a>
@@ -163,7 +163,7 @@ export default function RestaurantDetailPage() {
                   href={restaurant.website_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="rounded-full border border-line px-3.5 py-1.5 text-[12px] text-ink transition-colors hover:bg-surface-alt"
+                  className="rounded-full border-2 border-line px-3.5 py-1.5 text-[12px] text-ink transition-colors hover:bg-surface-alt"
                 >
                   公式サイト
                 </a>
@@ -178,7 +178,7 @@ export default function RestaurantDetailPage() {
           href={restaurant.website_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-block rounded-full border border-line px-3.5 py-1.5 text-[12px] text-ink transition-colors hover:bg-surface-alt"
+          className="inline-block rounded-full border-2 border-line px-3.5 py-1.5 text-[12px] text-ink transition-colors hover:bg-surface-alt"
         >
           公式サイト
         </a>
@@ -187,14 +187,14 @@ export default function RestaurantDetailPage() {
       <div className="flex gap-2.5 pt-1">
         <button
           onClick={() => setEditing(true)}
-          className="flex-1 rounded-xl bg-ink py-3 text-sm font-medium text-cream transition-opacity hover:opacity-90"
+          className="flex-1 rounded-xl bg-lime py-3.5 text-[15px] font-bold text-ink shadow-card transition-colors hover:bg-lime-deep"
         >
           編集する
         </button>
         <button
           onClick={handleDelete}
           disabled={deleting}
-          className="rounded-xl border border-line px-5 py-3 text-sm text-ink-soft transition-colors hover:bg-surface-alt disabled:opacity-50"
+          className="rounded-xl border-2 border-line px-5 py-3 text-sm text-ink-soft transition-colors hover:bg-surface-alt disabled:opacity-50"
         >
           {deleting ? "削除中..." : "削除"}
         </button>

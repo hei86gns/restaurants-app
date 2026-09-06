@@ -3,65 +3,82 @@
 :root {
   color-scheme: light;
 
-  /* 明るく食欲をそそる配色 */
-  --cream: #fff3e2; /* 背景：明るいクリーム */
-  --surface: #ffffff; /* カード：白 */
-  --surface-alt: #fdf0df; /* カード内の淡い面 */
-  --line: #f0d9ba; /* 枠線：はっきり見える暖色 */
-  --ink: #2e2119;
-  --ink-soft: #7a6350;
+  /* 明るくワクワクする配色（ライム・イエロー・ブルー） */
+  --bg: #f3f8ea;          /* 背景：淡いライム */
+  --surface: #ffffff;     /* カード：白 */
+  --surface-alt: #eef6df; /* カード内の淡い面 */
+  --line: #d3e3b6;        /* 枠線 */
 
-  --orange: #c24a0b; /* ボタン・強調（白文字が読める濃さ） */
-  --orange-dark: #a03d07;
-  --orange-bright: #f5883c; /* 装飾用の明るいオレンジ */
+  --ink: #2a331c;         /* 文字：黒ではなく深いグリーン寄り */
+  --ink-soft: #5c6a48;
 
-  --amber-bg: #ffe6c2;
-  --amber-ink: #a85c00;
-  --amber-line: #f5a524; /* 「行きたい」カードの左帯 */
+  --lime: #a3d93b;        /* ヘッダーなどの主役色 */
+  --lime-deep: #7cb518;
+  --lime-pale: #d9f0a6;
 
-  --sage-bg: #ddf0cb;
-  --sage-ink: #3c7320;
-  --sage-line: #63ac35; /* 「行った」カードの左帯 */
+  --blue: #1565c0;        /* ボタン：白文字が読める青 */
+  --blue-dark: #0d47a1;
+  --blue-pale: #d6e8fb;
 
-  --gold: #e8a317;
+  --yellow-line: #f5c518; /* 「行きたい」の帯 */
+  --yellow-bg: #fff2c2;
+  --yellow-ink: #7a5600;
+
+  --green-line: #6aab26;  /* 「行った」の帯 */
+  --green-bg: #ddf0bd;
+  --green-ink: #3d6412;
+
+  --star: #f5b301;
 }
 
 @theme inline {
-  --color-cream: var(--cream);
+  --color-bg: var(--bg);
   --color-surface: var(--surface);
   --color-surface-alt: var(--surface-alt);
   --color-line: var(--line);
+
   --color-ink: var(--ink);
   --color-ink-soft: var(--ink-soft);
 
-  --color-orange: var(--orange);
-  --color-orange-dark: var(--orange-dark);
-  --color-orange-bright: var(--orange-bright);
+  --color-lime: var(--lime);
+  --color-lime-deep: var(--lime-deep);
+  --color-lime-pale: var(--lime-pale);
 
-  --color-amber-bg: var(--amber-bg);
-  --color-amber-ink: var(--amber-ink);
-  --color-amber-line: var(--amber-line);
+  --color-blue: var(--blue);
+  --color-blue-dark: var(--blue-dark);
+  --color-blue-pale: var(--blue-pale);
 
-  --color-sage-bg: var(--sage-bg);
-  --color-sage-ink: var(--sage-ink);
-  --color-sage-line: var(--sage-line);
+  --color-yellow-line: var(--yellow-line);
+  --color-yellow-bg: var(--yellow-bg);
+  --color-yellow-ink: var(--yellow-ink);
 
-  --color-gold: var(--gold);
+  --color-green-line: var(--green-line);
+  --color-green-bg: var(--green-bg);
+  --color-green-ink: var(--green-ink);
 
-  --font-sans: var(--font-geist-sans);
-  /* 端末に元から入っている明朝体を使う（追加ダウンロードなしで上品な見出しに） */
-  --font-serif: "Hiragino Mincho ProN", "Yu Mincho", YuMincho, serif;
+  --color-star: var(--star);
 
-  /* カードを背景から浮かせる影 */
-  --shadow-card: 0 1px 2px rgba(120, 70, 20, 0.08),
-    0 6px 16px -8px rgba(120, 70, 20, 0.22);
-  --shadow-lift: 0 2px 6px rgba(120, 70, 20, 0.12),
-    0 14px 28px -12px rgba(120, 70, 20, 0.32);
+  /* 太めで柔らかい丸ゴシック（端末に元から入っているものを使用） */
+  --font-sans: "Hiragino Maru Gothic ProN", "ヒラギノ丸ゴ ProN W4",
+    "Hiragino Sans", "Yu Gothic UI", "YuGothic", "Meiryo", system-ui, sans-serif;
+  --font-rounded: var(--font-sans);
+
+  --shadow-card: 0 1px 2px rgba(60, 80, 30, 0.08),
+    0 6px 16px -8px rgba(60, 80, 30, 0.24);
+  --shadow-lift: 0 2px 6px rgba(60, 80, 30, 0.14),
+    0 14px 28px -12px rgba(60, 80, 30, 0.34);
 }
 
 body {
-  background: var(--cream);
+  background: var(--bg);
   color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 500; /* 全体的に少し太めにして読みやすく */
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, strong, button, label {
+  font-weight: 700;
 }
 
 input,
@@ -69,9 +86,12 @@ select,
 textarea {
   background-color: var(--surface);
   color: var(--ink);
+  font-family: var(--font-sans);
+  font-weight: 500;
 }
 
 input::placeholder,
 textarea::placeholder {
-  color: #b3a08b;
+  color: #9aa886;
+  font-weight: 500;
 }

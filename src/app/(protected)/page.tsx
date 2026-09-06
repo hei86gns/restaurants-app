@@ -67,7 +67,7 @@ export default function HomePage() {
           placeholder="店名・メモで探す"
           value={search}
           onChange={(e) => setSearch(e.target.value)}
-          className="w-full rounded-full border border-line py-2.5 pl-10 pr-4 text-sm focus:border-orange focus:outline-none"
+          className="w-full rounded-full border-2 border-line py-2.5 pl-10 pr-4 text-sm focus:border-blue focus:outline-none"
         />
       </div>
 
@@ -78,8 +78,8 @@ export default function HomePage() {
             onClick={() => setStatusFilter(tab.value)}
             className={`rounded-full px-3.5 py-1.5 text-[13px] transition-colors ${
               statusFilter === tab.value
-                ? "bg-ink font-medium text-cream"
-                : "border border-line bg-surface text-ink-soft"
+                ? "bg-lime font-bold text-ink"
+                : "border-2 border-line bg-surface text-ink-soft"
             }`}
           >
             {tab.label}
@@ -93,8 +93,8 @@ export default function HomePage() {
             onClick={() => setGenreFilter("all")}
             className={`shrink-0 rounded-full px-3 py-1 text-[12px] transition-colors ${
               genreFilter === "all"
-                ? "bg-orange font-medium text-white"
-                : "border border-line bg-surface text-ink-soft"
+                ? "bg-blue font-medium text-white"
+                : "border-2 border-line bg-surface text-ink-soft"
             }`}
           >
             ジャンル全部
@@ -105,8 +105,8 @@ export default function HomePage() {
               onClick={() => setGenreFilter(g)}
               className={`shrink-0 rounded-full px-3 py-1 text-[12px] transition-colors ${
                 genreFilter === g
-                  ? "bg-orange font-medium text-white"
-                  : "border border-line bg-surface text-ink-soft"
+                  ? "bg-blue font-medium text-white"
+                  : "border-2 border-line bg-surface text-ink-soft"
               }`}
             >
               {g}
@@ -118,8 +118,8 @@ export default function HomePage() {
       {loading ? (
         <p className="py-10 text-center text-sm text-ink-soft">読み込み中...</p>
       ) : filtered.length === 0 ? (
-        <div className="rounded-2xl border border-dashed border-line px-6 py-12 text-center">
-          <p className="font-serif text-ink">
+        <div className="rounded-2xl border-2 border-dashed border-line px-6 py-12 text-center">
+          <p className="font-bold text-ink">
             {restaurants.length === 0
               ? "まだお店がありません"
               : "条件に合うお店がありません"}
