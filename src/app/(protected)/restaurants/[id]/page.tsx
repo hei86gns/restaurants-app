@@ -6,6 +6,7 @@ import Link from "next/link";
 import { deleteRestaurant, getRestaurant } from "@/lib/restaurants";
 import type { Restaurant } from "@/lib/types";
 import { RestaurantForm } from "@/components/RestaurantForm";
+import { PhotoGallery } from "@/components/PhotoGallery";
 
 const MAPS_API_KEY = process.env.NEXT_PUBLIC_GOOGLE_MAPS_API_KEY;
 
@@ -75,14 +76,7 @@ export default function RestaurantDetailPage() {
         一覧にもどる
       </Link>
 
-      {restaurant.photo_url && (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={restaurant.photo_url}
-          alt={restaurant.name}
-          className="h-56 w-full rounded-2xl object-cover"
-        />
-      )}
+      <PhotoGallery photos={restaurant.photos} alt={restaurant.name} />
 
       <div>
         <div className="flex items-start justify-between gap-3">

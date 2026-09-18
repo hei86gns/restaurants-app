@@ -45,6 +45,8 @@ function PhotoPlaceholder() {
 
 export function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
   const been = restaurant.status === "been";
+  // 表紙（並びの先頭）の写真を一覧に出す
+  const cover = restaurant.photos[0];
 
   return (
     <Link
@@ -53,13 +55,20 @@ export function RestaurantCard({ restaurant }: { restaurant: Restaurant }) {
         been ? "border-l-green-line" : "border-l-yellow-line"
       }`}
     >
-      {restaurant.photo_url ? (
-        // eslint-disable-next-line @next/next/no-img-element
-        <img
-          src={restaurant.photo_url}
-          alt=""
-          className="h-[84px] w-[84px] shrink-0 rounded-xl object-cover"
-        />
+      {cover ? (
+        <div className="relative shrink-0">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src={cover.url}
+            alt=""
+            className="h-[84px] w-[84px] rounded-xl object-cover"
+          />
+          {restaurant.photos.length > 1 && (
+            <span className="absolute bottom-1 right-1 rounded-full bg-ink/75 px-1.5 py-0.5 text-[10px] font-bold text-white">
+              {restaurant.photos.length}枚
+            </span>
+          )}
+        </div>
       ) : (
         <PhotoPlaceholder />
       )}
