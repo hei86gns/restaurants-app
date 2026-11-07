@@ -10,6 +10,7 @@ import {
   updateRestaurant,
 } from "@/lib/restaurants";
 import { collectAreas, guessAreaFromAddress } from "@/lib/area";
+import { PasteImport, type PasteImportValues } from "@/components/PasteImport";
 import type { PhotoDraft, Restaurant, RestaurantStatus } from "@/lib/types";
 
 /** 1店舗あたりの写真の上限（保存容量を使いすぎないための目安） */
@@ -109,6 +110,20 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
     });
   }
 
+  const genreList = genreText
+    .split(",")
+    .map((g) => g.trim())
+    .filter(Boolean);
+
+  /** 「インスタの文章から入力」で読み取った内容を各欄に反映する */
+  function handlePasteImport(patch: Partial<PasteImportValues>) {
+    if (patch.name !== undefined) setName(patch.name);
+    if (patch.address !== undefined) handleAddressChange(patch.address);
+    if (patch.genres !== undefined) setGenreText(patch.genres.join(", "));
+    if (patch.websiteUrl !== undefined) setWebsiteUrl(patch.websiteUrl);
+    if (patch.memo !== undefined) setMemo(patch.memo);
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!session) return;
@@ -116,14 +131,9 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
     setError("");
 
     try {
-      const genre = genreText
-        .split(",")
-        .map((g) => g.trim())
-        .filter(Boolean);
-
       const input = {
         name,
-        genre,
+        genre: genreList,
         status,
         area: area.trim() || null,
         address: address || null,
@@ -157,6 +167,13 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
 
   return (
     <form onSubmit={handleSubmit} className="space-y-5">
+      {!isEdit && (
+        <PasteImport
+          values={{ name, address, genres: genreList, websiteUrl, memo }}
+          onChange={handlePasteImport}
+        />
+      )}
+
       <div className={cardClass}>
         <div>
           <label className={labelClass}>店名</label>
