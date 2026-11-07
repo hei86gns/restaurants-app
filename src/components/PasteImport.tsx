@@ -8,6 +8,7 @@ export type PasteImportValues = {
   address: string;
   genres: string[];
   websiteUrl: string;
+  instagramUrl: string;
   memo: string;
 };
 
@@ -47,6 +48,9 @@ export function PasteImport({ values, onChange }: Props) {
     }
     if (!values.websiteUrl.trim() && parsed.websiteUrl) {
       patch.websiteUrl = parsed.websiteUrl;
+    }
+    if (!values.instagramUrl.trim() && parsed.instagramUrl) {
+      patch.instagramUrl = parsed.instagramUrl;
     }
     onChange(patch);
 

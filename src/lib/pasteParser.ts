@@ -8,6 +8,8 @@
  * AI は使わないので精度は完璧ではない。外れてもユーザーが選び直せる前提。
  */
 
+import { normalizeInstagramUrl } from "@/lib/instagram";
+
 export type PasteParseResult = {
   /** 住所と判断した文字列（見つからなければ空文字） */
   address: string;
@@ -19,6 +21,8 @@ export type PasteParseResult = {
   genres: string[];
   /** インスタ以外のURL（公式サイトなど） */
   websiteUrl: string;
+  /** インスタの投稿・リールのURL（文章に含まれていた場合） */
+  instagramUrl: string;
   /** 営業時間・定休日などの行 */
   infoLines: string[];
 };
@@ -222,6 +226,7 @@ export function parsePastedText(text: string): PasteParseResult {
   // ---- 公式サイトなどのURL（インスタ自身のURLは除く） ----
   const urls = text.match(/https?:\/\/[^\s　）)」]+/g) ?? [];
   const websiteUrl = urls.find((u) => !/instagram\.com|instagr\.am/i.test(u)) ?? "";
+  const instagramUrl = normalizeInstagramUrl(text) ?? "";
 
   // ---- 営業時間・定休日など ----
   const infoLines = lines
@@ -234,6 +239,7 @@ export function parsePastedText(text: string): PasteParseResult {
     confidentName,
     genres,
     websiteUrl,
+    instagramUrl,
     infoLines,
   };
 }

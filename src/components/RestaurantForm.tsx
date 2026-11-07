@@ -10,6 +10,7 @@ import {
   updateRestaurant,
 } from "@/lib/restaurants";
 import { collectAreas, guessAreaFromAddress } from "@/lib/area";
+import { normalizeInstagramUrl } from "@/lib/instagram";
 import { PasteImport, type PasteImportValues } from "@/components/PasteImport";
 import type { PhotoDraft, Restaurant, RestaurantStatus } from "@/lib/types";
 
@@ -43,6 +44,10 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
   const [areaSuggestions, setAreaSuggestions] = useState<string[]>([]);
   const [address, setAddress] = useState(restaurant?.address ?? "");
   const [websiteUrl, setWebsiteUrl] = useState(restaurant?.website_url ?? "");
+  const [instagramUrl, setInstagramUrl] = useState(
+    restaurant?.instagram_url ?? ""
+  );
+  const [instagramNotice, setInstagramNotice] = useState("");
   const [memo, setMemo] = useState(restaurant?.memo ?? "");
   const [rating, setRating] = useState<number>(restaurant?.rating ?? 0);
 
@@ -121,12 +126,41 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
     if (patch.address !== undefined) handleAddressChange(patch.address);
     if (patch.genres !== undefined) setGenreText(patch.genres.join(", "));
     if (patch.websiteUrl !== undefined) setWebsiteUrl(patch.websiteUrl);
+    if (patch.instagramUrl !== undefined) setInstagramUrl(patch.instagramUrl);
     if (patch.memo !== undefined) setMemo(patch.memo);
+  }
+
+  /** インスタの「リンクをコピー」で取ったURLを貼り付ける */
+  async function pasteInstagramUrl() {
+    try {
+      const clip = await navigator.clipboard.readText();
+      const url = normalizeInstagramUrl(clip);
+      if (url) {
+        setInstagramUrl(url);
+        setInstagramNotice("");
+      } else {
+        setInstagramNotice(
+          "インスタのリンクが見つかりませんでした。投稿の「シェア」→「リンクをコピー」でコピーしてください。"
+        );
+      }
+    } catch {
+      setInstagramNotice("貼り付けを許可できませんでした。欄を長押しして「ペースト」してください。");
+    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault();
     if (!session) return;
+
+    const trimmedInstagram = instagramUrl.trim();
+    const normalizedInstagram = trimmedInstagram
+      ? normalizeInstagramUrl(trimmedInstagram)
+      : null;
+    if (trimmedInstagram && !normalizedInstagram) {
+      setError("インスタの投稿URLの形が正しくありません。インスタのリンクを貼り付けてください。");
+      return;
+    }
+
     setSaving(true);
     setError("");
 
@@ -141,6 +175,7 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
         lng: null,
         google_maps_url: address ? buildGoogleMapsUrl(name, address) : null,
         website_url: websiteUrl || null,
+        instagram_url: normalizedInstagram,
         memo: memo || null,
         rating: rating || null,
       };
@@ -169,7 +204,14 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
     <form onSubmit={handleSubmit} className="space-y-5">
       {!isEdit && (
         <PasteImport
-          values={{ name, address, genres: genreList, websiteUrl, memo }}
+          values={{
+            name,
+            address,
+            genres: genreList,
+            websiteUrl,
+            instagramUrl,
+            memo,
+          }}
           onChange={handlePasteImport}
         />
       )}
@@ -287,6 +329,34 @@ export function RestaurantForm({ restaurant }: { restaurant?: Restaurant }) {
             placeholder="https://..."
             className={inputClass}
           />
+        </div>
+
+        <div>
+          <label className={labelClass}>インスタの投稿URL</label>
+          <div className="flex gap-2">
+            <input
+              type="url"
+              inputMode="url"
+              value={instagramUrl}
+              onChange={(e) => setInstagramUrl(e.target.value)}
+              placeholder="https://www.instagram.com/..."
+              className={inputClass}
+            />
+            <button
+              type="button"
+              onClick={pasteInstagramUrl}
+              className="shrink-0 rounded-xl border-2 border-blue px-3.5 text-[13px] font-bold text-blue"
+            >
+              📋 貼り付け
+            </button>
+          </div>
+          {instagramNotice ? (
+            <p className="mt-1.5 text-[12px] text-yellow-ink">{instagramNotice}</p>
+          ) : (
+            <p className="mt-1.5 text-[12px] text-ink-soft">
+              投稿・リールの「シェア」→「リンクをコピー」で取れます。詳細画面から投稿に戻れます
+            </p>
+          )}
         </div>
       </div>
 

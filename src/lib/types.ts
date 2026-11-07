@@ -20,6 +20,8 @@ export type Restaurant = {
   lng: number | null;
   google_maps_url: string | null;
   website_url: string | null;
+  /** 登録のもとになったインスタ投稿・リールのURL */
+  instagram_url: string | null;
   memo: string | null;
   rating: number | null;
   created_at: string;
@@ -38,6 +40,7 @@ export type RestaurantInput = {
   lng: number | null;
   google_maps_url: string | null;
   website_url: string | null;
+  instagram_url: string | null;
   memo: string | null;
   rating: number | null;
 };

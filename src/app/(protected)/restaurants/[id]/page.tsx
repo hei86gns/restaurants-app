@@ -124,6 +124,17 @@ export default function RestaurantDetailPage() {
         </div>
       )}
 
+      {restaurant.instagram_url && (
+        <a
+          href={restaurant.instagram_url}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="flex items-center justify-center gap-2 rounded-2xl border-2 border-line bg-surface py-3.5 text-[14px] font-bold text-ink shadow-card transition-colors hover:bg-surface-alt"
+        >
+          📷 インスタの投稿を見る
+        </a>
+      )}
+
       {restaurant.address && (
         <div className="overflow-hidden rounded-2xl border-2 border-line bg-surface shadow-card">
           {MAPS_API_KEY && (
